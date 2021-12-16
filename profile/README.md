@@ -1,6 +1,4 @@
-# IceShard
-
-Welcome to IceShard!
+## Welcome!
 
 This is currently a small personal game engine project, with the mail goal to learn and improve.
 
