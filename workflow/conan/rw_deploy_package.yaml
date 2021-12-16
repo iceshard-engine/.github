@@ -1,0 +1,90 @@
+name: "Conan: deploy (v1)"
+
+on:
+  workflow_call:
+    inputs:
+      host:
+        description: "The host machine to be used by this workflow."
+        required: true
+        type: string
+      conan_package:
+        description: "The conan package ID that should be deployed by this workflow."
+        required: true
+        type: string
+
+      conan_options:
+        description: "Additional command line arguments passed to the 'create' command."
+        required: false
+        type: string
+      conan_upload_options:
+        description: "Additional command line arguments passed to the 'upload' command."
+        required: false
+        type: string
+      conan_config_url:
+        description: "A URL from which we can get conan configurations."
+        required: false
+        type: string
+      conan_profile:
+        description: "The conan profile to be used during validation. (requires 'conan_config_url')"
+        required: false
+        type: string
+    secrets:
+      conan_remote_url:
+        description: "The conan remote URL used to upstream the package."
+        required: true
+      conan_user:
+        description: "The conan user that will deploy the package on the server."
+        required: true
+      conan_password:
+        required: true
+      
+
+jobs:
+  create_package:
+    name: Create package
+    runs-on: ${{ input.host }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tools (Clang 11)
+        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'clang-11.0-linux-x86_64' }}
+        run: |
+          sudo apt install libc++-11-dev libc++abi-11-dev
+      - name: Install tools (Clang 12)
+        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'clang-12.0-linux-x86_64' }}
+        run: |
+          sudo apt install libc++-12-dev libc++abi-12-dev
+      - name: Install tools (GCC 11)
+        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'gcc-11.0-linux-x86_64' }}
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt install -y gcc-11 g++-11 libstdc++6
+
+      - name: Install Conan
+        shell: pwsh
+        run: |
+          pip3 install setuptools
+          pip3 install wheel
+          pip3 install conan
+      - name: Download config
+        if: ${{ input.conan_config_url != '' }}
+        shell: pwsh
+        run: |
+          conan config install ${{ input.conan_config_url }}
+
+      - name: Create (profile: default)
+        if: ${{ input.conan_profile == '' }}
+        shell: pwsh
+        run: |
+          conan create . ${{ input.conan_package }} ${{ input.conan_options }}
+      - name: Create (profile: ${{ input.conan_profile }})
+        if: ${{ input.conan_profile != '' }}
+        shell: pwsh
+        run: |
+          conan create . ${{ input.conan_package }} --profile ${{ input.conan_profile }} ${{ input.conan_options }}
+
+      - name: Upload
+        shell: pwsh
+        run: |
+          conan remote upstream-remote ${{ secrets.conan_remote_url }}
+          conan user ${{ secrets.conan_user }} -r upstream-remote -p ${{ secrets.conan_password }}
+          conan upload -r upstream-remote ${{ input.conan_package }} ${{ input.conan_upload_options }}
