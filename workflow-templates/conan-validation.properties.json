@@ -1,5 +1,5 @@
 {
-    "name": "Validation Workflow (Conan)",
+    "name": "IceShard - Conan Validation Workflow",
     "description": "A validation workflow for conan package repositories maintained within the IceShard ogranization.",
     "filePatterns": [
         "conanfile.py",
