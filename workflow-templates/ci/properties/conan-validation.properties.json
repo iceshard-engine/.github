@@ -4,5 +4,8 @@
     "categories": [
         "continuous-integration",
         "Python"
+    ],
+    "filePatterns": [
+        "conanfile.py"
     ]
 }
