@@ -7,7 +7,7 @@ on:
 jobs:
   validate-windows:
     name: Validate (Windows)
-    uses: iceshard-engine/.github/workflows/rw_conan_create_package.yaml@main
+    uses: iceshard-engine/.github/.github/workflows/rw_conan_create_package.yaml@main
     with:
       host: windows-latest
       conan_package: # You conan package ID 
@@ -16,7 +16,7 @@ jobs:
 
   validate-linux:
     name: Validate (Linux)
-    uses: iceshard-engine/.github/workflows/rw_conan_create_package.yaml@main
+    uses: iceshard-engine/.github/.github/workflows/rw_conan_create_package.yaml@main
     with:
       host: ubuntu-latest
       conan_package: # You conan package ID
