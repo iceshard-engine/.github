@@ -28,19 +28,19 @@ on:
 jobs:
   create_package:
     name: Create package
-    runs-on: ${{ input.host }}
+    runs-on: ${{ inputs.host }}
     steps:
       - uses: actions/checkout@v2
       - name: Install tools (Clang 11)
-        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'clang-11.0-linux-x86_64' }}
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'clang-11.0-linux-x86_64' }}
         run: |
           sudo apt install libc++-11-dev libc++abi-11-dev
       - name: Install tools (Clang 12)
-        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'clang-12.0-linux-x86_64' }}
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'clang-12.0-linux-x86_64' }}
         run: |
           sudo apt install libc++-12-dev libc++abi-12-dev
       - name: Install tools (GCC 11)
-        if: ${{ startsWith(input.host, 'ubuntu') && input.conan_profile == 'gcc-11.0-linux-x86_64' }}
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'gcc-11.0-linux-x86_64' }}
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt install -y gcc-11 g++-11 libstdc++6
@@ -52,18 +52,18 @@ jobs:
           pip3 install wheel
           pip3 install conan
       - name: Download config
-        if: ${{ input.conan_config_url != '' }}
+        if: ${{ inputs.conan_config_url != '' }}
         shell: pwsh
         run: |
-          conan config install ${{ input.conan_config_url }}
+          conan config install ${{ inputs.conan_config_url }}
 
       - name: 'Create (profile: default)'
-        if: ${{ input.conan_profile == '' }}
+        if: ${{ inputs.conan_profile == '' }}
         shell: pwsh
         run: |
-          conan create . ${{ input.conan_package }} ${{ input.conan_options }}
-      - name: 'Create (profile: ${{ input.conan_profile }})'
-        if: ${{ input.conan_profile != '' }}
+          conan create . ${{ inputs.conan_package }} ${{ inputs.conan_options }}
+      - name: 'Create (profile: ${{ inputs.conan_profile }})'
+        if: ${{ inputs.conan_profile != '' }}
         shell: pwsh
         run: |
-          conan create . ${{ input.conan_package }} --profile ${{ input.conan_profile }} ${{ input.conan_options }}
+          conan create . ${{ inputs.conan_package }} --profile ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
