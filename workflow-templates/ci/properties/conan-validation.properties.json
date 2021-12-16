@@ -1,5 +1,5 @@
 {
-    "name": "IceShard Conan Validation Workflow",
+    "name": "IceShard - Conan Validation Workflow",
     "description": "A validation workflow for conan package repositories maintained within the IceShard ogranization.",
     "categories": [
         "continuous-integration",
