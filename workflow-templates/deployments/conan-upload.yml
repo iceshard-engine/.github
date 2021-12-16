@@ -6,13 +6,6 @@ on:
     - main
     tags:
     - v*
-    
-env:
-  conan_package_id: # You conan package ID
-  conan_upstream_remote: 'conan-iceshard' # Organization default remote.
-  conan_config_url: 'https://github.com/iceshard-engine/conan-config.git' # Organization default config repo.
-  
-  
 
 jobs:
   deploy-windows-debug:
@@ -20,9 +13,9 @@ jobs:
     uses: iceshard-engine/gh-actions/.github/workflows/rw_conan_deploy_package.yaml@main
     with:
       host: windows-latest
-      conan_package: ${{ env.conan_package_id }}
-      conan_upstream_remote: ${{ env.conan_upstream_remote }}
-      conan_config_url: ${{ env.conan_config_url }}
+      conan_package: # Your conan package ID
+      conan_upstream_remote: 'conan-iceshard'
+      conan_config_url: 'https://github.com/iceshard-engine/conan-config.git'
       conan_options: '-s"build_type=Debug"'
       conan_upload_options: '--all'
     secrets:
@@ -34,9 +27,9 @@ jobs:
     uses: iceshard-engine/gh-actions/.github/workflows/rw_conan_deploy_package.yaml@main
     with:
       host: windows-latest
-      conan_package: ${{ env.conan_package_id }}
-      conan_upstream_remote: ${{ env.conan_upstream_remote }}
-      conan_config_url: ${{ env.conan_config_url }}
+      conan_package: # Your conan package ID
+      conan_upstream_remote: 'conan-iceshard'
+      conan_config_url: 'https://github.com/iceshard-engine/conan-config.git'
       conan_options: '-s"build_type=Release"'
       conan_upload_options: '--all'
     secrets:
@@ -48,9 +41,9 @@ jobs:
     uses: iceshard-engine/gh-actions/.github/workflows/rw_conan_deploy_package.yaml@main
     with:
       host: ubuntu-latest
-      conan_package: ${{ env.conan_package_id }}
-      conan_upstream_remote: ${{ env.conan_upstream_remote }}
-      conan_config_url: ${{ env.conan_config_url }}
+      conan_package: # Your conan package ID
+      conan_upstream_remote: 'conan-iceshard'
+      conan_config_url: 'https://github.com/iceshard-engine/conan-config.git'
       conan_options: '-s"build_type=Debug"'
       conan_profile: 'gcc-11.0-linux-x86_64'
       conan_upload_options: '--all'
@@ -63,9 +56,9 @@ jobs:
     uses: iceshard-engine/gh-actions/.github/workflows/rw_conan_deploy_package.yaml@main
     with:
       host: ubuntu-latest
-      conan_package: ${{ env.conan_package_id }}
-      conan_upstream_remote: ${{ env.conan_upstream_remote }}
-      conan_config_url: ${{ env.conan_config_url }}
+      conan_package: # Your conan package ID
+      conan_upstream_remote: 'conan-iceshard'
+      conan_config_url: 'https://github.com/iceshard-engine/conan-config.git'
       conan_options: '-s"build_type=Release"'
       conan_profile: 'gcc-11.0-linux-x86_64'
       conan_upload_options: '--all'
