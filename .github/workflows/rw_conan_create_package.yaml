@@ -57,12 +57,12 @@ jobs:
         run: |
           conan config install ${{ input.conan_config_url }}
 
-      - name: Create (profile: default)
+      - name: 'Create (profile: default)'
         if: ${{ input.conan_profile == '' }}
         shell: pwsh
         run: |
           conan create . ${{ input.conan_package }} ${{ input.conan_options }}
-      - name: Create (profile: ${{ input.conan_profile }})
+      - name: 'Create (profile: ${{ input.conan_profile }})'
         if: ${{ input.conan_profile != '' }}
         shell: pwsh
         run: |
