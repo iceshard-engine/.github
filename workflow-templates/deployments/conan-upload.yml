@@ -23,7 +23,7 @@ jobs:
       conan_package: ${{ env.conan_package_id }}
       conan_upstream_remote: ${{ env.conan_upstream_remote }}
       conan_config_url: ${{ env.conan_config_url }}
-      conan_options: '-s"build_type=Debug" -o"shared=True" --build=Assimp --build=zlib'
+      conan_options: '-s"build_type=Debug" -o"shared=True"'
       conan_upload_options: '--all'
     secrets:
       conan_user: 'iceshard'
@@ -37,7 +37,7 @@ jobs:
       conan_package: ${{ env.conan_package_id }}
       conan_upstream_remote: ${{ env.conan_upstream_remote }}
       conan_config_url: ${{ env.conan_config_url }}
-      conan_options: '-s"build_type=Release" -o"shared=True" --build=Assimp --build=zlib'
+      conan_options: '-s"build_type=Release" -o"shared=True"'
       conan_upload_options: '--all'
     secrets:
       conan_user: 'iceshard'
@@ -51,7 +51,7 @@ jobs:
       conan_package: ${{ env.conan_package_id }}
       conan_upstream_remote: ${{ env.conan_upstream_remote }}
       conan_config_url: ${{ env.conan_config_url }}
-      conan_options: '-s"build_type=Debug" -o"shared=True" --build=Assimp --build=zlib --build=openssl'
+      conan_options: '-s"build_type=Debug" -o"shared=True"'
       conan_profile: 'gcc-11.0-linux-x86_64'
       conan_upload_options: '--all'
     secrets:
@@ -66,7 +66,7 @@ jobs:
       conan_package: ${{ env.conan_package_id }}
       conan_upstream_remote: ${{ env.conan_upstream_remote }}
       conan_config_url: ${{ env.conan_config_url }}
-      conan_options: '-s"build_type=Release" -o"shared=True" --build=Assimp --build=zlib --build=openssl'
+      conan_options: '-s"build_type=Release" -o"shared=True"'
       conan_profile: 'gcc-11.0-linux-x86_64'
       conan_upload_options: '--all'
     secrets:
