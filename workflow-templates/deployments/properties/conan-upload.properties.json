@@ -1,0 +1,11 @@
+{
+    "name": "IceShard - Conan Upload Workflow",
+    "description": "A deployment workflow for conan package repositories maintained within the IceShard ogranization. Uploads the given package to a specified conan remote.",
+    "categories": [
+        "deployment",
+        "Python"
+    ],
+    "filePatterns": [
+        "conanfile.py"
+    ]
+}
