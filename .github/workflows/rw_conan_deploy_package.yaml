@@ -87,4 +87,4 @@ jobs:
         shell: pwsh
         run: |
           conan user ${{ secrets.conan_user }} -r ${{ inputs.conan_upstream_remote }} -p ${{ secrets.conan_password }}
-          conan upload -r upstream-remote ${{ inputs.conan_package }} ${{ inputs.conan_upload_options }}
+          conan upload -r ${{ inputs.conan_upstream_remote }} ${{ inputs.conan_package }} ${{ inputs.conan_upload_options }}
