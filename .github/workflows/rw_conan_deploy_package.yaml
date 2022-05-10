@@ -11,10 +11,11 @@ on:
         description: "The conan package ID that should be deployed by this workflow."
         required: true
         type: string
-      conan_upstream_remote:
-        description: "The conan remote URL used to upstream the package."
-        required: true
+      conan_recipe_location:
+        description: "The location of the conan recipe to be used."
+        required: false
         type: string
+        default: '.'
 
       conan_options:
         description: "Additional command line arguments passed to the 'create' command."
@@ -76,12 +77,12 @@ jobs:
         if: ${{ inputs.conan_profile == '' }}
         shell: pwsh
         run: |
-          conan create . ${{ inputs.conan_package }} ${{ inputs.conan_options }}
+          conan create ${{ inputs.conan_recipe_location }} ${{ inputs.conan_package }} ${{ inputs.conan_options }}
       - name: 'Create (profile: ${{ inputs.conan_profile }})'
         if: ${{ inputs.conan_profile != '' }}
         shell: pwsh
         run: |
-          conan create . ${{ inputs.conan_package }} --profile ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
+          conan create ${{ inputs.conan_recipe_location }} ${{ inputs.conan_package }} --profile ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
 
       - name: Upload
         shell: pwsh
