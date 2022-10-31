@@ -8,8 +8,12 @@ on:
         required: true
         type: string
       conan_package:
-        description: "The conan package ID that should be deployed by this workflow."
+        description: "The conan package ID that should be created by this workflow."
         required: true
+        type: string
+      conan_deploy_package:
+        description: "The conan package ID that should be deployed by this workflow."
+        required: false
         type: string
       conan_upstream_remote:
         description: "The conan remote URL used to upstream the package."
@@ -97,4 +101,4 @@ jobs:
         shell: pwsh
         run: |
           conan user ${{ secrets.conan_user }} -r ${{ inputs.conan_upstream_remote }} -p ${{ secrets.conan_password }}
-          conan upload -r ${{ inputs.conan_upstream_remote }} ${{ inputs.conan_package }} ${{ inputs.conan_upload_options }}
+          conan upload -r ${{ inputs.conan_upstream_remote }} ${{ inputs.conan_deploy_package || inputs.conan_package }} ${{ inputs.conan_upload_options }}
