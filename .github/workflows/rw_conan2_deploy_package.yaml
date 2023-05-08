@@ -1,0 +1,114 @@
+name: "Conan2: deploy (v1)"
+
+on:
+  workflow_call:
+    inputs:
+      host:
+        description: "The host machine to be used by this workflow."
+        required: true
+        type: string
+      conan_package_recipe:
+        description: "The location of the conan recipe to be used."
+        required: true
+        type: string
+      conan_package_version:
+        description: "The conan package ID that should be created by this workflow."
+        required: true
+        type: string
+      conan_package_user:
+        description: "The conan package ID that should be created by this workflow."
+        required: true
+        type: string
+        default: 'iceshard'
+      conan_package_channel:
+        description: "The conan package ID that should be created by this workflow."
+        required: true
+        type: string
+        default: 'stable'
+      conan_package_deploy:
+        description: "The conan package ID that should be created by this workflow."
+        required: false
+        type: string
+
+      conan_upstream_remote:
+        description: "The conan remote URL used to upstream the package."
+        required: true
+        type: string
+
+      conan_options:
+        description: "Additional command line arguments passed to the 'create' command."
+        required: false
+        type: string
+      conan_upload_options:
+        description: "Additional command line arguments passed to the 'upload' command."
+        required: false
+        type: string
+      conan_config_url:
+        description: "A URL from which we can get conan configurations."
+        required: false
+        type: string
+      conan_profile:
+        description: "The conan profile to be used during validation. (requires 'conan_config_url')"
+        required: false
+        type: string
+    secrets:
+      conan_user:
+        description: "The conan user that will deploy the package on the server."
+        required: true
+      conan_password:
+        required: true
+      
+
+jobs:
+  create_package:
+    name: Create package
+    runs-on: ${{ inputs.host }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install tools (Clang 11)
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'clang-11.0-linux-x86_64' }}
+        run: |
+          sudo apt install libc++-11-dev libc++abi-11-dev
+      - name: Install tools (Clang 12)
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'clang-12.0-linux-x86_64' }}
+        run: |
+          sudo apt install libc++-12-dev libc++abi-12-dev
+      - name: Install tools (GCC 11)
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'gcc-11.0-linux-x86_64' }}
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt install -y gcc-11 g++-11 libstdc++6
+      - name: Install tools (GCC 12)
+        if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'gcc-12.0-linux-x86_64' }}
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt install -y gcc-12 g++-12 libstdc++6
+
+      - name: Install Conan
+        shell: pwsh
+        run: |
+          pip3 install setuptools
+          pip3 install wheel
+          pip3 install conan
+      - name: Download config
+        if: ${{ inputs.conan_config_url != '' }}
+        shell: pwsh
+        run: |
+          conan config install ${{ inputs.conan_config_url }}
+
+      - name: 'Create (profile: default)'
+        if: ${{ inputs.conan_profile == '' }}
+        shell: pwsh
+        run: |
+          conan create ${{ inputs.conan_package_recipe }} --version ${{ inputs.conan_package_version }} --user ${{ inputs.conan_package_user }} --channel ${{ inputs.conan_package_channel }} ${{ inputs.conan_options }}
+      - name: 'Create (profile: ${{ inputs.conan_profile }})'
+        if: ${{ inputs.conan_profile != '' }}
+        shell: pwsh
+        run: |
+          conan create ${{ inputs.conan_package_recipe }} --version ${{ inputs.conan_package_version }} --user ${{ inputs.conan_package_user }} --channel ${{ inputs.conan_package_channel }} --profile ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
+
+      - name: Upload
+        shell: pwsh
+        run: |
+          conan user ${{ secrets.conan_user }} -r ${{ inputs.conan_upstream_remote }} -p ${{ secrets.conan_password }}
+          conan upload -r ${{ inputs.conan_upstream_remote }} ${{ inputs.conan_package_deploy }}/${{ inputs.conan_package_version }}@${{ inputs.conan_package_user }}/${{ inputs.conan_package_channel }} ${{ inputs.conan_upload_options }}
