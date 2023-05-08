@@ -111,5 +111,5 @@ jobs:
       - name: Upload
         shell: pwsh
         run: |
-          conan user ${{ secrets.conan_user }} -r ${{ inputs.conan_upstream_remote }} -p ${{ secrets.conan_password }}
+          conan remote login ${{ secrets.conan_user }} ${{ inputs.conan_upstream_remote }} -p ${{ secrets.conan_password }}
           conan upload -r ${{ inputs.conan_upstream_remote }} ${{ inputs.conan_package_deploy }}/${{ inputs.conan_package_version }}@${{ inputs.conan_package_user }}/${{ inputs.conan_package_channel }} ${{ inputs.conan_upload_options }}
