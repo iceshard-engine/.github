@@ -95,7 +95,7 @@ jobs:
         shell: pwsh
         run: |
           conan config install ${{ inputs.conan_config_url }}
-          conan config detect
+          conan profile detect
 
       - name: 'Create (profile: default)'
         if: ${{ inputs.conan_profile == '' }}
