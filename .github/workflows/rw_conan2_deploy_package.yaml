@@ -95,6 +95,7 @@ jobs:
         shell: pwsh
         run: |
           conan config install ${{ inputs.conan_config_url }}
+          conan config detect
 
       - name: 'Create (profile: default)'
         if: ${{ inputs.conan_profile == '' }}
@@ -105,7 +106,7 @@ jobs:
         if: ${{ inputs.conan_profile != '' }}
         shell: pwsh
         run: |
-          conan create ${{ inputs.conan_package_recipe }} --version ${{ inputs.conan_package_version }} --user ${{ inputs.conan_package_user }} --channel ${{ inputs.conan_package_channel }} --profile ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
+          conan create ${{ inputs.conan_package_recipe }} --version ${{ inputs.conan_package_version }} --user ${{ inputs.conan_package_user }} --channel ${{ inputs.conan_package_channel }} --profile:build ${{ inputs.conan_profile }} ${{ inputs.conan_options }}
 
       - name: Upload
         shell: pwsh
