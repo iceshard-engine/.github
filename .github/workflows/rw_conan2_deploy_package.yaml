@@ -64,7 +64,7 @@ jobs:
     name: Create package
     runs-on: ${{ inputs.host }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install tools (Clang 11)
         if: ${{ startsWith(inputs.host, 'ubuntu') && inputs.conan_profile == 'clang-11.0-linux-x86_64' }}
         run: |
