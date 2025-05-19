@@ -1,0 +1,43 @@
+name: conan2
+author: dandielo@iceshard.net
+description: Initialization and configuration of Conan2 package manager.
+
+inputs:
+  conan-cache:
+    description: 'Allows the action to setup caching for Conan2 packages.'
+    required: false
+    default: false
+  conan-cache-version:
+    description: 'User provided version string for the cache key. Allows to cut-off all previous cache keys.'
+    required: false
+    default: 'v1'
+  conan-config-url:
+    description: 'User provided URL containing valid conan2 configuration files. (ex.: a github repository)'
+    required: false
+    default: 'https://github.com/iceshard-engine/conan-config.git'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Conan2 - Install required packages
+      shell: powershell
+      run: pip install conan
+
+    - name: Conan2 - Configure for IceShard engine
+      shell: powershell
+      run: conan config install ${{ inputs.conan-config-url }}
+
+    - name: Conan2 - Detect current machine default profile
+      shell: powershell
+      run: conan profile detect
+
+    - name: Conan2 - Setup cache
+      if: ${{ inputs.conan-cache == 'true' }}
+      uses: actions/cache@v4
+      env:
+        cache-name: conan2-packages
+      with:
+        path: ~/.conan2
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.conan-cache-version }}-${{ hashFiles('**/conanfile.txt', '**/conanprofiles.txt') }}
+        restore-keys: |
+          ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.conan-cache-version }}
