@@ -1,0 +1,74 @@
+name: IBT Workspace
+author: dandielo@iceshard.net
+description: Initialization of IBT workspace tools and dependencies.
+
+inputs:
+  script_basename:
+    description: "Script file basename used by the workspace. (ex.: 'ibt' if the scripts used are called ibt.bat/sh/ps1)"
+    required: false
+    default: 'ibt'
+  workspace-cache:
+    description: "Caches the workspace configuration and any installed SDK's."
+    required: false
+    default: true
+  workspace-cache-version:
+    description: "User provided version string for the cache key. Allows to cut-off all previous cache keys."
+    required: false
+    default: 'v1'
+  platform-android:
+    description: "Installation required Android packages and setup projects."
+    required: false
+    default: false
+  platform-web:
+    description: "Installation required Emscripten packages and setup projects."
+    required: false
+    default: false
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: IBT - Setup cache
+      if: ${{ inputs.workspace-cache == 'true' }}
+      uses: actions/cache@v4
+      env:
+        cache-name: ibt-workspace
+      with:
+        path: |
+          build/android_gradlew
+          build/webasm
+          build/conan
+          build/tools
+          build/*.bff
+          build/*.txt
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.workspace-cache-version }}-${{ hashFiles('**/conanfile.txt', '**/conanprofiles.txt', '**/*.bff') }}
+        restore-keys: |
+          ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.workspace-cache-version }}
+
+    ## Initialization of the workspace also geenrating a powershell script ./ibt-ci
+    - name: Initialize workspace
+      if: ${{ runner.os == 'Windows' }}
+      shell: powershell
+      run: ./${{ inputs.script_basename }}.bat init --usage ci
+
+    - name: Initialize workspace
+      if: ${{ runner.os != 'Windows' }}
+      shell: powershell
+      run: ./${{ inputs.script_basename }}.sh init --usage ci
+
+    ## Ensure Emscripten is installed
+    - name: Setup Emscripten projects
+      if: ${{ inputs.platform-web == 'true' }}
+      shell: powershell
+      run: ./ibt-ci webasm setup
+
+    ## Ensure gradle wrapper is installed
+    - name: Setup Android projects
+      if: ${{ inputs.platform-android == 'true' }}
+      shell: powershell
+      run: ./ibt-ci android setup
+
+    ## Update the workspace with any new dependencies or toolchains after setting up androind and emscripten
+    - name: Update workspace
+      shell: powershell
+      run: ./ibt-ci update
