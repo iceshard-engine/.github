@@ -45,30 +45,40 @@ runs:
         restore-keys: |
           ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.workspace-cache-version }}
 
+    ## Install dependencies
+    ## * libreadline-dev - Used by lua-5.1.5 when building (might be necessary)
+    - name: Install dependencies (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        sudo apt install libreadline-dev
+
     ## Initialization of the workspace also geenrating a powershell script ./ibt-ci
     - name: Initialize workspace
       if: ${{ runner.os == 'Windows' }}
-      shell: powershell
+      shell: pwsh
       run: ./${{ inputs.script_basename }}.bat init --usage ci
 
     - name: Initialize workspace
       if: ${{ runner.os != 'Windows' }}
-      shell: powershell
-      run: ./${{ inputs.script_basename }}.sh init --usage ci
+      shell: bash
+      run: |
+        chmod +x ./${{ inputs.script_basename }}.sh
+        ./${{ inputs.script_basename }}.sh init --usage ci
 
     ## Ensure Emscripten is installed
     - name: Setup Emscripten projects
       if: ${{ inputs.platform-web == 'true' }}
-      shell: powershell
+      shell: pwsh
       run: ./ibt-ci webasm setup
 
     ## Ensure gradle wrapper is installed
     - name: Setup Android projects
       if: ${{ inputs.platform-android == 'true' }}
-      shell: powershell
+      shell: pwsh
       run: ./ibt-ci android setup
 
     ## Update the workspace with any new dependencies or toolchains after setting up androind and emscripten
     - name: Update workspace
-      shell: powershell
+      shell: pwsh
       run: ./ibt-ci update
