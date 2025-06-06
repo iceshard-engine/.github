@@ -49,7 +49,7 @@ runs:
       shell: pwsh
       run: |
         conan profile detect
-        'echo "CONAN_PROFILE_PATH=$(conan profile path default)" >> "$GITHUB_ENV"'
+        echo "CONAN_PROFILE_PATH=$(conan profile path default)" >> "$GITHUB_ENV"
     - name: Conan2 - Set 'compiler' for default profile (${{ inputs.conan-profile-compiler }}-${{ inputs.conan-profile-compiler-version }})
       if: ${{ inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
