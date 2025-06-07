@@ -38,7 +38,7 @@ runs:
       run: |
         pip install conan
 
-    - none: Conan2 - Install crudini (ubuntu-only)
+    - name: Conan2 - Install crudini (ubuntu-only)
       if: ${{ inputs.host-platform == 'ubuntu-latest' }}
       shell: pwsh
       run: |
