@@ -39,7 +39,7 @@ runs:
         pip install conan
 
     - name: Conan2 - Install crudini (ubuntu-only)
-      if: ${{ inputs.host-platform == 'ubuntu-latest' }}
+      if: ${{ runner.os == 'Linux' }}
       shell: pwsh
       run: |
         sudo apt install crudini
@@ -56,18 +56,18 @@ runs:
         conan profile detect
         echo "CONAN_PROFILE_PATH=$(conan profile path default)" >> "$env:GITHUB_ENV"
     - name: Conan2 - Set 'compiler' for default profile (${{ inputs.conan-profile-compiler }}-${{ inputs.conan-profile-compiler-version }})
-      if: ${{ inputs.host-platform == 'ubuntu-latest' && inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
+      if: ${{ runner.os == 'Linux' && inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
       run: |
         crudini --set $env:CONAN_PROFILE_PATH settings compiler ${{ inputs.conan-profile-compiler }}
         crudini --set $env:CONAN_PROFILE_PATH settings compiler.version ${{ inputs.conan-profile-compiler-version }}
     - name: Conan2 - Set 'compiler.cppstd' for default profile (c++${{ inputs.conan-profile-cppstd }})
-      if: ${{ inputs.host-platform == 'ubuntu-latest' }}
+      if: ${{ runner.os == 'Linux' }}
       shell: pwsh
       run: |
         crudini --set $env:CONAN_PROFILE_PATH settings compiler.cppstd ${{ inputs.conan-profile-cppstd }}
     - name: Conan2 - Set 'compiler.libcxx' for default profile (${{ inputs.conan-profile-libcxx }})
-      if: ${{ inputs.host-platform == 'ubuntu-latest' && inputs.conan-profile-compiler == 'clang' && inputs.conan-profile-compiler-version != '' }}
+      if: ${{ runner.os == 'Linux' && inputs.conan-profile-compiler == 'clang' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
       run: |
         crudini --set $env:CONAN_PROFILE_PATH settings compiler.libcxx ${{ inputs.conan-profile-libcxx }}
