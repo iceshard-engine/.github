@@ -15,18 +15,23 @@ inputs:
     description: 'User provided URL containing valid conan2 configuration files. (ex.: a github repository)'
     required: false
     default: 'https://github.com/iceshard-engine/conan-config.git'
+  # Conan2 profile settings
+  conan-modify-profile:
+    description: 'If enabled, sets selected values in the default profile.'
+    required: false
+    default: false
   conan-profile-compiler:
-    description: 'The compiler to be used in the default conan profile'
+    description: 'The compiler to be used in the default conan profile.'
     required: false
   conan-profile-compiler-version:
-    description: 'The compiler version to be used in the default conan profile'
+    description: 'The compiler version to be used in the default conan profile.'
     required: false
   conan-profile-cppstd:
-    description: 'The C++ standard version to be used in the default conan profile'
+    description: 'The C++ standard version to be used in the default conan profile.'
     required: false
     default: '20'
   conan-profile-libcxx:
-    description: 'The C++ standard library to be used in the default conan profile (linux-only)'
+    description: 'The C++ standard library to be used in the default conan profile. (linux-only)'
     required: false
     default: 'libc++'
 
@@ -49,28 +54,27 @@ runs:
       run: conan config install ${{ inputs.conan-config-url }}
 
     # Preparing the default profile
-    - id: conan-profile
-      name: Conan2 - Detect current machine default profile
+    - name: Conan2 - Detect current machine default profile
       shell: pwsh
       run: |
         conan profile detect
         echo "CONAN_PROFILE_PATH=$(conan profile path default)" >> "$env:GITHUB_ENV"
     - name: Conan2 - Set 'compiler' for default profile (${{ inputs.conan-profile-compiler }}-${{ inputs.conan-profile-compiler-version }})
-      if: ${{ runner.os == 'Linux' && inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
+      if: ${{ inputs.conan-modify-profile && inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
       run: |
-        crudini --set $env:CONAN_PROFILE_PATH settings compiler ${{ inputs.conan-profile-compiler }}
-        crudini --set $env:CONAN_PROFILE_PATH settings compiler.version ${{ inputs.conan-profile-compiler-version }}
+        python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler ${{ inputs.conan-profile-compiler }}
+        python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler.version ${{ inputs.conan-profile-compiler-version }}
     - name: Conan2 - Set 'compiler.cppstd' for default profile (c++${{ inputs.conan-profile-cppstd }})
-      if: ${{ runner.os == 'Linux' }}
+      if: ${{ inputs.conan-modify-profile && inputs.conan-profile-cppstd != '' }}
       shell: pwsh
       run: |
-        crudini --set $env:CONAN_PROFILE_PATH settings compiler.cppstd ${{ inputs.conan-profile-cppstd }}
+        python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler.cppstd ${{ inputs.conan-profile-cppstd }}
     - name: Conan2 - Set 'compiler.libcxx' for default profile (${{ inputs.conan-profile-libcxx }})
-      if: ${{ runner.os == 'Linux' && inputs.conan-profile-compiler == 'clang' && inputs.conan-profile-compiler-version != '' }}
+      if: ${{ inputs.conan-modify-profile && inputs.conan-profile-libcxx != '' && inputs.conan-profile-compiler == 'clang' }}
       shell: pwsh
       run: |
-        crudini --set $env:CONAN_PROFILE_PATH settings compiler.libcxx ${{ inputs.conan-profile-libcxx }}
+        python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler.libcxx ${{ inputs.conan-profile-libcxx }}
 
     # Setting up the caching mechanism
     - name: Conan2 - Setup cache
