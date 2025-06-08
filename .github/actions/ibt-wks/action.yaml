@@ -15,11 +15,15 @@ inputs:
     description: "User provided version string for the cache key. Allows to cut-off all previous cache keys."
     required: false
     default: 'v1'
-  platform-android:
+  target-platform:
+    description: "The platform for which the IBT workspace should be initialized. If set, only targets of that platform can be build."
+    required: false
+    default: 'all'
+  setup-for-android:
     description: "Installation required Android packages and setup projects."
     required: false
     default: false
-  platform-web:
+  setup-for-web:
     description: "Installation required Emscripten packages and setup projects."
     required: false
     default: false
@@ -66,15 +70,20 @@ runs:
         chmod +x ./${{ inputs.script_basename }}.sh
         ./${{ inputs.script_basename }}.sh init --usage ci
 
+    - name: Set development platform
+      if: ${{ inputs.target-platform != 'all' }}
+      shell: pwsh
+      run: ./ibt-ci init --for-platform ${{ inputs.target-platform }}
+
     ## Ensure Emscripten is installed
     - name: Setup Emscripten projects
-      if: ${{ inputs.platform-web == 'true' }}
+      if: ${{ inputs.setup-for-web == 'true' || inputs.target-platform == 'web' }}
       shell: pwsh
       run: ./ibt-ci webasm setup
 
     ## Ensure gradle wrapper is installed
     - name: Setup Android projects
-      if: ${{ inputs.platform-android == 'true' }}
+      if: ${{ inputs.setup-for-android == 'true' || inputs.target-platform == 'android' }}
       shell: pwsh
       run: ./ibt-ci android setup
 
