@@ -53,13 +53,6 @@ runs:
       shell: pwsh
       run: conan config install ${{ inputs.conan-config-url }}
 
-    # Fixing up Conan2 settings
-    - name: Conan2 - Ensure Conan2 knows clang version
-      if: ${{ inputs.conan-profile-compiler-version != '' }}
-      shell: pwsh
-      run: |
-        python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ inputs.conan-profile-compiler-version }}
-
     # Preparing the default profile
     - name: Conan2 - Detect current machine default profile
       shell: pwsh
@@ -94,3 +87,10 @@ runs:
         key: ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.conan-cache-version }}-${{ hashFiles('**/conanfile.txt', '**/conanprofiles.txt') }}
         restore-keys: |
           ${{ env.cache-name }}-${{ runner.os }}-${{ inputs.conan-cache-version }}
+
+    # Fixing up Conan2 settings
+    - name: Conan2 - Ensure Conan2 knows clang version
+      if: ${{ inputs.conan-profile-compiler-version != '' }}
+      shell: pwsh
+      run: |
+        python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ inputs.conan-profile-compiler-version }}
