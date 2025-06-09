@@ -63,6 +63,7 @@ runs:
       if: ${{ inputs.conan-modify-profile == 'true' && inputs.conan-profile-compiler != '' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
       run: |
+        python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ inputs.conan-profile-compiler-version }}
         python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler ${{ inputs.conan-profile-compiler }}
         python $env:GITHUB_ACTION_PATH/ini.py $env:CONAN_PROFILE_PATH settings compiler.version ${{ inputs.conan-profile-compiler-version }}
     - name: Conan2 - Set 'compiler.cppstd' for default profile (c++${{ inputs.conan-profile-cppstd }})
