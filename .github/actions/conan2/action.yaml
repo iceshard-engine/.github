@@ -111,14 +111,12 @@ runs:
       id: conan-profile-reader
       shell: pwsh
       run: |
-        echo "::notice::Reading compiler information from '$env:CONAN_PROFILE_PATH' conan profile."
-        echo "::notice::$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler)"
-        echo "compiler-name=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler)" >> $GITHUB_OUTPUT
-        echo "compiler-version=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler.version)" >> $GITHUB_OUTPUT
+        echo "compiler-name=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler)" >> $env:GITHUB_OUTPUT
+        echo "compiler-version=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler.version)" >> $env:GITHUB_OUTPUT
 
     # Fixing up Conan2 settings if given clang version does not exist yet
     - name: Conan2 - Ensure Conan2 knows clang version
-      if: ${{ steps.conan-profile-reader.compiler-name == 'clang' }}
+      if: ${{ steps.conan-profile-reader.outputs.compiler-name == 'clang' }}
       shell: pwsh
       run: |
-        python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ steps.conan-profile-reader.compiler-version }}
+        python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ steps.conan-profile-reader.outputs.compiler-version }}
