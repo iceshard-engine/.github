@@ -111,6 +111,8 @@ runs:
       id: conan-profile-reader
       shell: pwsh
       run: |
+        echo "::notice::Reading compiler information from '$env:CONAN_PROFILE_PATH' conan profile."
+        echo "::notice::$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler)"
         echo "compiler-name=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler)" >> $GITHUB_OUTPUT
         echo "compiler-version=$(python $env:GITHUB_ACTION_PATH/ini_read.py $env:CONAN_PROFILE_PATH settings compiler.version)" >> $GITHUB_OUTPUT
 
