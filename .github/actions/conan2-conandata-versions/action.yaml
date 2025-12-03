@@ -1,0 +1,37 @@
+name: conan2
+author: dandielo@iceshard.net
+description: Initialization and configuration of Conan2 package manager.
+
+inputs:
+  conandata-path:
+    description: 'Path to a conandata.yml file to be parsed.'
+    required: false
+    default: 'conandata.yml'
+  version-count:
+    description: 'Number of versions to return from the conandata file.'
+    required: false
+    default: '1'
+
+outputs:
+  version-list:
+    description: 'List of N latest versions of the selected conandata.yml file.'
+    value: ${{ steps.read-conandata.outputs.version-list }}
+  version-latest: 
+    description: 'Highest version found in the conandata file.'
+    value: ${{ steps.select-latest.outputs.version-latest }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Read conandata.yml file for version information.
+      id: read-conandata
+      shell: pwsh
+      run: |
+        echo "version-list=$(python $env:GITHUB_ACTION_PATH/read_conandata_yaml.py ${{ inputs.conandata-path }} ${{ inputs.version-count }})" >> $env:GITHUB_OUTPUT
+
+    - name: Select latest version value.
+      if: ${{ inputs.version-count > 0 && steps.read-conandata.outputs.version-list != '[]' }}
+      id: select-latest
+      shell: pwsh
+      run: |
+        echo "version-latest=${{ fromJSON(steps.read-conandata.outputs.version-list)[0] }}" >> $env:GITHUB_OUTPUT
