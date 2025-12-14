@@ -120,12 +120,11 @@ runs:
       shell: pwsh
       run: |
         python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ steps.conan-profile-reader.outputs.compiler-version }}
-        
+
     # Fixing up Conan2 settings if given clang version does not exist yet
-    # This step is a bit hacky and we should just move to use proper profile files. 
+    # This step is a bit hacky and we should just move to use proper profile files.
     - name: Conan2 - Ensure Conan2 knows clang version (from parameters)
-      if: ${{ inputs.conan-profile-compiler == 'clang' }}
+      if: ${{ inputs.conan-profile-compiler == 'clang' && inputs.conan-profile-compiler-version != '' }}
       shell: pwsh
       run: |
         python $env:GITHUB_ACTION_PATH/conan2_clang_version_support_fix.py ${{ inputs.conan-profile-compiler-version }}
-
